@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Климат плюс</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header id="header">
+        <div id="logo">
+            <h2 class="logo-text">Климат плюс</h2>
+            <p class="logo-text">Установка кондиционеров</p>
+        </div>
+        <nav class="page">
+            <a href="#">Главная</a>
+            <a href="#">Каталог</a>
+            <a href="#">О нас</a>
+            <a href="#">Контакты</a>
+        </nav>
+    </header>
+
+    <main id="under-logo-container">
+        <div id="under-logo">
+            <div id="no-image">
+                <h1 class="slogan-text">Установка кондиционеров под ключ</h1>
+                <p class="slogan-text">Мы предлагаем услуги по установке кондиционеров в Воронеже</p>
+                <div class="buttons-container">
+                    <a href="#" class="button button-primary">Оставить заявку</a>
+                    <a href="#" class="button button-secondary">Смотреть каталог</a>
+                </div>
+            </div>
+            <div>
+                <img src="images/under-logo-img.png" alt="Фото кондиционера" class="image-border">
+            </div>
+        </div>
+        <section>
+            <hr>
+            <div id="our-benefits-container">
+                <h2 id="our-benefits">Наши преимущества</h2>
+            </div>
+            <div id="benefits-container">
+                <div class="benefit">
+                    <div class="in-benefit-container">
+                        <img src="images/shield.png" alt="Гарантия">
+                        <p>Гарантия от производителя</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <div class="in-benefit-container">
+                        <img src="images/wrench.png" alt="Диагностика">
+                        <p>Бесплатная диагностика</p>
+                    </div>
+                </div>
+                <div class="benefit">
+                    <div class="in-benefit-container">
+                        <img src="images/headphones.png" alt="Консультации">
+                        <p>Консультации по телефону</p>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </section>
+        <section>
+            <h2>Популярные кондиционеры</h2>
+            <!-- Здесь можно добавить карточки товаров -->
+        </section>
+            <div id="order-container">
+                <div id="order-text-container">
+                    <p>Оставьте заявку</p>
+                    <p>мы перезвоним и проконсультируем вас</p>
+                </div>
+                <form id="order-form">
+                    <div id="order-fields-container">
+                        <input type="text" class="input-field" name="name" placeholder="Имя" required>
+                        <input type="tel" id="phone" class="input-field" name="phone" placeholder="+7 (999) 123-45-67" required>
+                        <div id="order-button-container">
+                            <input type="submit" id="order-button" value="Отправить">
+                        </div>
+                    </div>
+                </form>
+            </div>
+    </main>
+
+    <!-- Подключение JS -->
+    <script src="main.js"></script>
+</body>
+</html>

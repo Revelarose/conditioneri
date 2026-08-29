@@ -1,0 +1,6 @@
+window.React.useState()
+function MyButton() {
+  return (
+    <button>I'm a button</button>
+  );
+}
