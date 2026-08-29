@@ -1,6 +1,18 @@
 <?php
-header('Content-Type: application/json; charset=utf-8'); header('Cache-Control: no-store');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 $pdo=new PDO('mysql:host=localhost;dbname=testorder;charset=utf8mb4','root','',[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC]);
 $pdo->exec("CREATE TABLE IF NOT EXISTS order_items (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,order_id INT UNSIGNED NOT NULL,product_id INT UNSIGNED NULL,service_id INT UNSIGNED NULL,title VARCHAR(255) NOT NULL,price DECIMAL(12,2) NOT NULL DEFAULT 0,quantity INT UNSIGNED NOT NULL DEFAULT 1,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,INDEX(order_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 $allowed=['new','contacted','confirmed','completed','cancelled'];
-try{$method=$_SERVER['REQUEST_METHOD'];if($method==='GET'){$rows=$pdo->query('SELECT id,name,phone,status FROM orders ORDER BY id DESC')->fetchAll();foreach($rows as &$o){$s=$pdo->prepare('SELECT id,product_id,service_id,title,price,quantity FROM order_items WHERE order_id=? ORDER BY id');$s->execute([$o['id']]);$o['items']=$s->fetchAll();}$out=$rows;echo json_encode($out,JSON_UNESCAPED_UNICODE);exit;}if(!in_array($method,['PATCH','POST'],true))throw new RuntimeException('Метод не поддерживается');$d=json_decode(file_get_contents('php://input'),true)?:$_POST;$id=(int)($d['id']??0);$status=trim($d['status']??'');if(!$id||!in_array($status,$allowed,true))throw new RuntimeException('Некорректный заказ или статус');$s=$pdo->prepare('UPDATE orders SET status=? WHERE id=?');$s->execute([$status,$id]);echo json_encode(['status'=>'success'],JSON_UNESCAPED_UNICODE);}catch(Throwable $e){http_response_code(400);echo json_encode(['status'=>'error','message'=>$e->getMessage()],JSON_UNESCAPED_UNICODE);}?>
+try{
+ $method=$_SERVER['REQUEST_METHOD'];
+ if($method==='GET'){
+  $rows=$pdo->query('SELECT id,name,phone,status FROM orders ORDER BY id DESC')->fetchAll();
+  foreach($rows as &$o){$s=$pdo->prepare('SELECT id,product_id,service_id,title,price,quantity FROM order_items WHERE order_id=? ORDER BY id');$s->execute([$o['id']]);$o['items']=$s->fetchAll();$o['total']=array_reduce($o['items'],fn($sum,$i)=>$sum+(float)$i['price']*(int)$i['quantity'],0);$o['item_count']=array_sum(array_map(fn($i)=>(int)$i['quantity'],$o['items']));}
+  echo json_encode($rows,JSON_UNESCAPED_UNICODE);exit;
+ }
+ if($method==='PATCH'){$d=json_decode(file_get_contents('php://input'),true)?:$_POST;$id=(int)($d['id']??0);$status=trim($d['status']??'');if(!$id||!in_array($status,$allowed,true))throw new RuntimeException('Некорректный заказ или статус');$s=$pdo->prepare('UPDATE orders SET status=? WHERE id=?');$s->execute([$status,$id]);echo json_encode(['status'=>'success'],JSON_UNESCAPED_UNICODE);exit;}
+ if($method==='DELETE'){ $id=(int)($_GET['id']??0);if(!$id)throw new RuntimeException('Некорректный ID');$pdo->beginTransaction();$pdo->prepare('DELETE FROM order_items WHERE order_id=?')->execute([$id]);$pdo->prepare('DELETE FROM orders WHERE id=?')->execute([$id]);$pdo->commit();echo json_encode(['status'=>'success']);exit;}
+ throw new RuntimeException('Метод не поддерживается');
+}catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();http_response_code(400);echo json_encode(['status'=>'error','message'=>$e->getMessage()],JSON_UNESCAPED_UNICODE);}
+?>
